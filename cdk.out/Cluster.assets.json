@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "55a395369bcf186063be11486677d5b587280e53b93fb96bb086b0d6255172e7": {
+      "displayName": "Cluster Template",
+      "source": {
+        "path": "Cluster.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-30b153fe": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55a395369bcf186063be11486677d5b587280e53b93fb96bb086b0d6255172e7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
