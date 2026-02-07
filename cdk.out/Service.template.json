@@ -1,0 +1,697 @@
+{
+ "Resources": {
+  "AluraServiceLBAB719DC8": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AluraServiceLBSecurityGroup15174ABC",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcPublicSubnet1Subnet55D5C07629D402C7"
+     },
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcPublicSubnet2Subnet330AA5D191C7E2F0"
+     }
+    ],
+    "Type": "application"
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/LB/Resource"
+   }
+  },
+  "AluraServiceLBSecurityGroup15174ABC": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB ServiceAluraServiceLB0235AACE",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow from anyone on port 8080",
+      "FromPort": 8080,
+      "IpProtocol": "tcp",
+      "ToPort": 8080
+     }
+    ],
+    "VpcId": {
+     "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcACBDAE3DC8EDBD8E"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/LB/SecurityGroup/Resource"
+   }
+  },
+  "AluraServiceLBSecurityGrouptoServiceAluraServiceSecurityGroupA64D418C80809B639564": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AluraServiceSecurityGroupC03E32BF",
+      "GroupId"
+     ]
+    },
+    "FromPort": 8080,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "AluraServiceLBSecurityGroup15174ABC",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 8080
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/LB/SecurityGroup/to ServiceAluraServiceSecurityGroupA64D418C:8080"
+   }
+  },
+  "AluraServiceLBPublicListener31342720": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "AluraServiceLBPublicListenerECSGroup827267C7"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "AluraServiceLBAB719DC8"
+    },
+    "Port": 8080,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/LB/PublicListener/Resource"
+   }
+  },
+  "AluraServiceLBPublicListenerECSGroup827267C7": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcACBDAE3DC8EDBD8E"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/LB/PublicListener/ECSGroup/Resource"
+   }
+  },
+  "AluraServiceTaskDefTaskRole0F12EEA5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/TaskDef/TaskRole/Resource"
+   }
+  },
+  "AluraServiceTaskDef524442F2": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "jacquelineoliveira/ola:1.0",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "AluraServiceTaskDefappolaLogGroup38E71EDE"
+        },
+        "awslogs-stream-prefix": "AluraService",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "app_ola",
+      "PortMappings": [
+       {
+        "ContainerPort": 8080,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "AluraServiceTaskDefExecutionRole2E02CA08",
+      "Arn"
+     ]
+    },
+    "Family": "ServiceAluraServiceTaskDef6DB20201",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "AluraServiceTaskDefTaskRole0F12EEA5",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/TaskDef/Resource"
+   }
+  },
+  "AluraServiceTaskDefappolaLogGroup38E71EDE": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/TaskDef/app_ola/LogGroup/Resource"
+   }
+  },
+  "AluraServiceTaskDefExecutionRole2E02CA08": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/TaskDef/ExecutionRole/Resource"
+   }
+  },
+  "AluraServiceTaskDefExecutionRoleDefaultPolicy30A8BA35": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "AluraServiceTaskDefappolaLogGroup38E71EDE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AluraServiceTaskDefExecutionRoleDefaultPolicy30A8BA35",
+    "Roles": [
+     {
+      "Ref": "AluraServiceTaskDefExecutionRole2E02CA08"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/TaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "AluraServiceD1536A49": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Fn::ImportValue": "Cluster:ExportsOutputRefAluraCluster5C1035CFFF1863E4"
+    },
+    "DeploymentConfiguration": {
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "app_ola",
+      "ContainerPort": 8080,
+      "TargetGroupArn": {
+       "Ref": "AluraServiceLBPublicListenerECSGroup827267C7"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "ENABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "AluraServiceSecurityGroupC03E32BF",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcPublicSubnet1Subnet55D5C07629D402C7"
+       },
+       {
+        "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcPublicSubnet2Subnet330AA5D191C7E2F0"
+       }
+      ]
+     }
+    },
+    "ServiceName": "alura-service-ola",
+    "TaskDefinition": {
+     "Ref": "AluraServiceTaskDef524442F2"
+    }
+   },
+   "DependsOn": [
+    "AluraServiceLBPublicListenerECSGroup827267C7",
+    "AluraServiceLBPublicListener31342720",
+    "AluraServiceTaskDefTaskRole0F12EEA5"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/Service/Service"
+   }
+  },
+  "AluraServiceSecurityGroupC03E32BF": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Service/AluraService/Service/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcACBDAE3DC8EDBD8E"
+    }
+   },
+   "DependsOn": [
+    "AluraServiceTaskDefTaskRole0F12EEA5"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/Service/SecurityGroup/Resource"
+   }
+  },
+  "AluraServiceSecurityGroupfromServiceAluraServiceLBSecurityGroup7D2B156780803C46178F": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "FromPort": 8080,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "AluraServiceSecurityGroupC03E32BF",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AluraServiceLBSecurityGroup15174ABC",
+      "GroupId"
+     ]
+    },
+    "ToPort": 8080
+   },
+   "DependsOn": [
+    "AluraServiceTaskDefTaskRole0F12EEA5"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "Service/AluraService/Service/SecurityGroup/from ServiceAluraServiceLBSecurityGroup7D2B1567:8080"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/51TTW8aMRD9LfExMm5DD624kfRDVFETBW4oigZ72LoYe2uPQcja/17Za8hSoh56Ws17857na8di/OGjuLmCfRhJtRkZvRJpTiA3HPbhJaEMLy0QobdBTNvWaAmknb13oG7BgJWovoJvgHCOfqclcjQQSEvjQK1KhrbNbizS22q/ZNeMs2v2zO/WZwQfCnQgtK/J/ExUyaFgAb5B+uZdbHPKIOw4yrFIc5TRazoUbJnYrpVsUlwVBul1m10qAsa4/dSYh0grF61ikzWYgB1PDJSa2cZjCE/RIJssE5NgZ9Zoiz1CPiJn0lmLMnuGahqt/h1xpkrY8dSVnorxc3X+MjTObE3KliXnWPSblQwE1bVM66zxC6B/8gKuznl2QaS68AWEzWdca6tzX3+v5rSe8zR+5yyBtugH2PkFLY/KGndcw1akJ2dwmRiEELeobg9skljrtZW6BTOV0kVLx4WVnCyYytMeuzKl/1Zz5p3BH7DF4cgX7vFo8uiMlod8Al2/QCKQP/tTOHG5tX+TpfP8OO/xfo9VsHCZufC5hJWaExBu0VKoJRXj3rPjxjVBpHvXHO/fI6F97bb+jT3ddTl6iNRG6vh32MG78Y14Lz5d/Qpaj3y0pLconvrvHxPmGipTBAAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "Service/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "AluraServiceLoadBalancerDNS2EC0D396": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AluraServiceLBAB719DC8",
+     "DNSName"
+    ]
+   }
+  },
+  "AluraServiceServiceURL6A8B7491": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "http://",
+      {
+       "Fn::GetAtt": [
+        "AluraServiceLBAB719DC8",
+        "DNSName"
+       ]
+      }
+     ]
+    ]
+   }
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

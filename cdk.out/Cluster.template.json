@@ -286,6 +286,16 @@
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputRefAluraCluster5C1035CFFF1863E4": {
+   "Value": {
+    "Ref": "AluraCluster5C1035CF"
+   },
+   "Export": {
+    "Name": "Cluster:ExportsOutputRefAluraCluster5C1035CFFF1863E4"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

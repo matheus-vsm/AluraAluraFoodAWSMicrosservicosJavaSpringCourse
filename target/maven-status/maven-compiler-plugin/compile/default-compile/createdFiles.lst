@@ -1,4 +1,5 @@
 com\myorg\AluraAwsInfraStack.class
 com\myorg\AluraClusterStack.class
 com\myorg\AluraAwsInfraApp.class
+com\myorg\AluraServiceStack.class
 com\myorg\AluraVpcStack.class
