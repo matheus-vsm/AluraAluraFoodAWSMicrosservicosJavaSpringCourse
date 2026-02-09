@@ -15,6 +15,9 @@ public class AluraAwsInfraApp {
         AluraClusterStack clusterStack = new AluraClusterStack(app, "Cluster", vpcStack.getVpc());
         clusterStack.addDependency(vpcStack); // Garante que o cluster seja criado após a VPC
 
+        AluraRdsStack rdsStack = new AluraRdsStack(app, "Rds", vpcStack.getVpc());
+        rdsStack.addDependency(vpcStack); // Garante que o RDS seja criado após a VPC
+
         AluraServiceStack serviceStack = new AluraServiceStack(app, "Service", clusterStack.getCluster());
         serviceStack.addDependency(clusterStack); // Garante que o serviço seja criado após o Cluster
 
