@@ -1,14 +1,18 @@
 package com.myorg;
 
 import software.amazon.awscdk.Fn;
+import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.ecr.IRepository;
 import software.amazon.awscdk.services.ecr.Repository;
+import software.amazon.awscdk.services.ecs.AwsLogDriverProps;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ContainerImage;
+import software.amazon.awscdk.services.ecs.LogDriver;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
+import software.amazon.awscdk.services.logs.LogGroup;
 import software.constructs.Construct;
 
 import java.util.HashMap;
@@ -37,7 +41,7 @@ public class AluraServiceStack extends Stack {
                 .serviceName("alura-service-ola")
                 .cluster(cluster)           // Required
                 .cpu(512)                   // Default is 256
-                .desiredCount(1)            // Default is 1
+                .desiredCount(3)            // Default is 1
                 .listenerPort(8080)
                 .assignPublicIp(true)       // Permite acesso público
                 .taskImageOptions(
@@ -47,6 +51,13 @@ public class AluraServiceStack extends Stack {
                                 .containerPort(8080)
                                 .containerName("app_ola")
                                 .environment(autenticacao)
+                                .logDriver(LogDriver.awsLogs(AwsLogDriverProps.builder()
+                                        .logGroup(LogGroup.Builder.create(this, "PedidosMsLogGroup")
+                                                .logGroupName("PedidosMsLog")
+                                                .removalPolicy(RemovalPolicy.DESTROY)
+                                                .build())
+                                        .streamPrefix("PedidosMS")
+                                        .build()))
                                 .build())
                 .memoryLimitMiB(1024)       // Default is 512
                 .publicLoadBalancer(true)   // Default is false
