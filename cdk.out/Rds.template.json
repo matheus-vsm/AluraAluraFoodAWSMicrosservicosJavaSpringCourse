@@ -1,23 +1,110 @@
 {
+ "Parameters": {
+  "senha": {
+   "Type": "String",
+   "Description": "Senha do database pedidos-ms"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
  "Resources": {
-  "AluraCluster5C1035CF": {
-   "Type": "AWS::ECS::Cluster",
+  "Rdsfrom000003306ABDC33FC": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "ClusterName": "cluster-alura"
+    "CidrIp": "0.0.0.0/0",
+    "Description": "from 0.0.0.0/0:3306",
+    "FromPort": 3306,
+    "GroupId": {
+     "Fn::ImportValue": "Vpc:ExportsOutputFnGetAttAluraVpcACBDAE3DDefaultSecurityGroupC16DC9BE"
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 3306
    },
    "Metadata": {
-    "aws:cdk:path": "Cluster/AluraCluster/Resource"
+    "aws:cdk:path": "Rds/Rds/from 0.0.0.0_0:3306"
+   }
+  },
+  "RdspedidosSubnetGroupA487F029": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for Rds-pedidos database",
+    "SubnetIds": [
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcPrivateSubnet1Subnet1A80C03D6F53D784"
+     },
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputRefAluraVpcPrivateSubnet2SubnetA7B54DACEA8E9F0A"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "Rds/Rds-pedidos/SubnetGroup/Default"
+   }
+  },
+  "RdspedidosF4407238": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "AllocatedStorage": "10",
+    "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t2.micro",
+    "DBInstanceIdentifier": "alura-aws-pedido-db",
+    "DBSubnetGroupName": {
+     "Ref": "RdspedidosSubnetGroupA487F029"
+    },
+    "Engine": "mysql",
+    "EngineVersion": "8.0",
+    "MasterUserPassword": {
+     "Ref": "senha"
+    },
+    "MasterUsername": "admin",
+    "MultiAZ": false,
+    "PubliclyAccessible": false,
+    "StorageType": "gp2",
+    "VPCSecurityGroups": [
+     {
+      "Fn::ImportValue": "Vpc:ExportsOutputFnGetAttAluraVpcACBDAE3DDefaultSecurityGroupC16DC9BE"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "Rds/Rds-pedidos/Resource"
    }
   },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzK20DNQTCwv1k1OydbNyUzSqw4uSUzO1kksL45PTS7Wq3bOKS0uSS2KrlZKhrD8EnNTlayUtJR0lMoKksGs2lgd57Q8qMraWh2vxLJEfSNDPQM9C8Ws4sxM3aLSvJLM3FS9IAgNABZz82F4AAAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/4VSS2/bMAz+LdUxULw2uxS+9YEN6WWFs+0SBAMj0wEbWRJIKkVm+L8PceLV2WUn8fHx8X3Uolh8vi9ub+Bd5q7ezz1ti26l4Pb2qQmvwNCiItsKJWZ2aOFdfnXoFsVTE1boMpMev3LMaRl2jCKWaym6Z1DYguAyiEJwuO6MY6wxKIEXU5qZsQbDjgKasrtY348Jr1I/kYViOCGa7P1fd4C08BZ5GuqtSeO+w0ZfoCV/vMCFws7jD0GuooJSDA8peXKDeTX1uiynFFmlQqgrHAoewe1zElMqZ+ytAe+jA8V6pZFhN1KgC/UJq0Ny/ySXgyQNIY+ssld6+G3KBrygNTKVWEy5NjOzGTqt8jagykkcGc310GNmNn2/sWfAULjuTI3imNKE7cc2/+1mDWMbD+Bfoyd31qbfnH7I8+NkzDkw3rzvT/63rClrb1/gAJ8Wd8VtcX/zJkRzzkGpxaI6v38ApXbqUYkCAAA="
    },
    "Metadata": {
-    "aws:cdk:path": "Cluster/CDKMetadata/Default"
+    "aws:cdk:path": "Rds/CDKMetadata/Default"
    },
    "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Outputs": {
+  "pedidosdbendpoint": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RdspedidosF4407238",
+     "Endpoint.Address"
+    ]
+   },
+   "Export": {
+    "Name": "pedidos-db-endpoint"
+   }
+  },
+  "pedidosdbsenha": {
+   "Value": {
+    "Ref": "senha"
+   },
+   "Export": {
+    "Name": "pedidos-db-senha"
+   }
   }
  },
  "Conditions": {
@@ -284,23 +371,6 @@
      ]
     }
    ]
-  }
- },
- "Outputs": {
-  "ExportsOutputRefAluraCluster5C1035CFFF1863E4": {
-   "Value": {
-    "Ref": "AluraCluster5C1035CF"
-   },
-   "Export": {
-    "Name": "Cluster:ExportsOutputRefAluraCluster5C1035CFFF1863E4"
-   }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Rules": {

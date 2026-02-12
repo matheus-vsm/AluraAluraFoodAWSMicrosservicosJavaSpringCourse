@@ -37,13 +37,16 @@
     </build>
 
     <dependencies>
-        <!-- AWS Cloud Development Kit -->
+        <!-- AWS CDK (Cloud Development Kit) - biblioteca principal com todos os serviços AWS -->
+        <!-- Inclui: EC2, VPC, ECS, RDS, ECR, CloudWatch, etc. - permite IaC em Java -->
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>aws-cdk-lib</artifactId>
             <version>${cdk.version}</version>
         </dependency>
 
+        <!-- Constructs - abstração base usada pelo CDK para definir recursos -->
+        <!-- Construct = bloco de construção (ex: Vpc, Cluster, DatabaseInstance) -->
         <dependency>
             <groupId>software.constructs</groupId>
             <artifactId>constructs</artifactId>

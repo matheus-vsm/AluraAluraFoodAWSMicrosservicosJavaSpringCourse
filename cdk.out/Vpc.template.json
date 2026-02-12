@@ -590,7 +590,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/82Uz0/CMBSA/xZ7JGUKJmi4jcWYGSMLGA4SYt7aB1S2dmlfh7jwvxs2hMToSQ87vR99efnSfmk/6F/fBL0L2LqukJtuptKgmhKIDYete0XRD6pZIeYVy+E9/HBsyDpsv+DRUs+SiCc+zZSY+lQjzSsGJagMUpUp2r0YjfU0Z2UhYnnMhZJ2lBmxOdY5FM2SuBjrR/BarNmQrEfOVFEOom/j4Jxa6bgoB6GUFp0b68gikDK6QeMtoahBpHwCugfCLezYcM46bNEawHZQ/HpNtWKNWIdsYjzhM6QZnvvnXuicEapefBo+JHdxcgjn7TyxqgTCfzd2CZlrwVv8DaM9JC3BaCyMNaHVeHKo+fuOVUgEYp2jpj2foDPeCuSRd2Tyr7IWuvby5/PEmlJJtCNwyEPnkKYEK6VXe/4AJVz2e8FVcHvx5pTqWq9J5RhMmvgJ51JNxb8FAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/82Uz2vCMBSA/5blKLFzDkS81TJGx5hFh4eJjNfkqZltUpKXOlf834etUxjbaTv09H7k8fhIPtIP+rfDoHcFO9cVctvNVBpUMwKx5bBzryj6QTUvxKJiObyHH46NWIcdljxa6XkS8cSnmRIzn2qkRcWgBJVBqjJF+xejsZ7mrCxELE+5UNKOMyO2pzqHolkSFxP9CF6LDRuR9ciZKspB9G0cnFNrHRflIJTSonMTHVkEUkY3aLwlFDWIlE9A90C4gz0bLViHLVsD2A6KX6+pVqwR65hNjSd8hjTDS//SC50zQtWLz8PH5C5OjuGynSdWlUD478auIHMteIu/YbSHpCUYjYWxJrQazw41f9+pColAbHLUdOBTdMZbgTzyjkz+VdZC117+fJ5YUyqJdgwOeegc0oxgrfT6wB+ghOv+TdALhldvTqmu9ZpUjsG0iZ9tMf/dvwUAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "Vpc/CDKMetadata/Default"
@@ -865,6 +865,33 @@
   }
  },
  "Outputs": {
+  "ExportsOutputFnGetAttAluraVpcACBDAE3DDefaultSecurityGroupC16DC9BE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AluraVpcACBDAE3D",
+     "DefaultSecurityGroup"
+    ]
+   },
+   "Export": {
+    "Name": "Vpc:ExportsOutputFnGetAttAluraVpcACBDAE3DDefaultSecurityGroupC16DC9BE"
+   }
+  },
+  "ExportsOutputRefAluraVpcPrivateSubnet1Subnet1A80C03D6F53D784": {
+   "Value": {
+    "Ref": "AluraVpcPrivateSubnet1Subnet1A80C03D"
+   },
+   "Export": {
+    "Name": "Vpc:ExportsOutputRefAluraVpcPrivateSubnet1Subnet1A80C03D6F53D784"
+   }
+  },
+  "ExportsOutputRefAluraVpcPrivateSubnet2SubnetA7B54DACEA8E9F0A": {
+   "Value": {
+    "Ref": "AluraVpcPrivateSubnet2SubnetA7B54DAC"
+   },
+   "Export": {
+    "Name": "Vpc:ExportsOutputRefAluraVpcPrivateSubnet2SubnetA7B54DACEA8E9F0A"
+   }
+  },
   "ExportsOutputRefAluraVpcPublicSubnet1Subnet55D5C07629D402C7": {
    "Value": {
     "Ref": "AluraVpcPublicSubnet1Subnet55D5C076"
